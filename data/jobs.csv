@@ -1,0 +1,21 @@
+job_name,required_skills,required_experience,required_qualification
+Python Developer,"python",1,b.tech
+SQL Developer,"sql",1,b.tech
+Web Developer,"html, css, javascript",1,b.tech
+Frontend Developer,"react, javascript, css",1,b.tech
+Backend Developer,"python, django, sql",2,b.tech
+Full Stack Developer,"html, css, javascript, python, django",2,b.tech
+Data Analyst,"python, excel, sql",2,b.tech
+Machine Learning Engineer,"python, ml, data science",2,b.tech
+Data Scientist,"python, pandas, ml, statistics",2,b.tech
+Java Developer,"java, spring",1,b.tech
+Android Developer,"java, kotlin",1,b.tech
+Software Tester,"testing, selenium",1,b.tech
+DevOps Engineer,"linux, docker, aws, git",2,b.tech
+Cloud Engineer,"aws, azure, networking",2,b.tech
+Cybersecurity Analyst,"security, linux, networking",2,b.tech
+AI Engineer,"python, ml, deep learning",2,b.tech
+Blockchain Developer,"solidity, web3, ethereum",2,b.tech
+UI/UX Designer,"figma, ui design",1,b.tech
+Database Administrator,"sql, mysql, oracle",2,b.tech
+System Administrator,"linux, networking",1,b.tech
