@@ -18,7 +18,21 @@ This project is a **Candidate Shortlisting Tool** built in Python. You input can
 1. You provide **job requirement** details (skills, experience, keywords, etc).  
 2. You enter **candidate** profiles (skills, past roles, education, etc).  
 3. The tool computes a match score (or similar metric) using the core logic.  
-4. The GUI presents the results so you can pick the best fits.  
+4. The GUI presents the results so you can pick the best fits.
+
+## 🧠 Future Enhancements
+
+Here are some ideas (would love contributions!):
+
+- ✨ **Smarter Matching:** Add advanced scoring mechanisms such as fuzzy-matching for skills, synonym handling, and keyword extraction.
+- 📦 **Bulk Operations:** Support batch import/export of candidates and jobs (CSV, Excel, or PDF formats).
+- 🌐 **Web Interface:** Build a web-based version for collaborative team access instead of the current desktop GUI.
+- 💬 **Richer Data:** Include more metadata like cultural fit, soft-skill ratings, and recruiter notes for holistic evaluation.
+- 📊 **Analytics Dashboard:** Provide insightful metrics such as:
+  - Average match score per job
+  - Top 3 shortlists per position
+  - Distribution of scores and candidate overlaps
+
 
 ## 📂 Project structure
 
@@ -30,3 +44,4 @@ This project is a **Candidate Shortlisting Tool** built in Python. You input can
 ├── job_matcher.py      # core matching logic
 ├── gui_main.py         # graphical interface to use the tool
 └── README.md           # (that’s this file!)
+
