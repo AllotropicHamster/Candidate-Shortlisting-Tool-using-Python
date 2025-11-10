@@ -4,29 +4,55 @@ from candidate_input import get_candidate_input
 from job_input import get_job_input
 from job_matcher import comparr
 
-# ------------------ GUI SETUP ------------------
 root = tk.Tk()
 root.title("Candidate Shortlisting Tool")
 
-# Make window resizable and start large
 root.geometry("1000x700")
 root.minsize(800, 500)
-root.state("zoomed")  # Opens in fullscreen/maximized mode
+root.state("zoomed")  
 
-# Gradient Background
-gradient_frame = tk.Canvas(root, width=800, height=600)
+gradient_frame = tk.Canvas(root)
 gradient_frame.pack(fill="both", expand=True)
 
-# Create gradient background
-for i in range(0, 600):
-    color = f"#%02x%02x%02x" % (180 - i//5, 200 - i//10, 255 - i//15)
-    gradient_frame.create_line(0, i, 800, i, fill=color)
+def update_gradient(event=None):
+    if event:
+        width = event.width
+        height = event.height
+    else:
+        width = gradient_frame.winfo_width()
+        height = gradient_frame.winfo_height()
+    
+    if width <= 1 or height <= 1:
+        return
+        
+    gradient_frame.delete("all")
+    
+    try:
+        step = max(1, height // 100)
+        for i in range(0, height, 1):
+            color = f"#%02x%02x%02x" % (
+                max(0, min(255, 180 - i//step)),
+                max(0, min(255, 200 - i//step)),
+                max(0, min(255, 255 - i//step))
+            )
+            gradient_frame.create_line(0, i, width, i, fill=color)
+        
+        title_font = ("Segoe UI", 36, "bold")
+        gradient_frame.create_text(width//2, height//8, 
+                                 text="Candidate Shortlisting Tool",
+                                 font=title_font,
+                                 fill="#1a365d")
+    except Exception as e:
+        print(f"Error in gradient update: {e}")
 
-# Transparent frame over gradient
+gradient_frame.bind("<Configure>", update_gradient)
+
+root.update_idletasks()
+update_gradient()
+
 main_frame = tk.Frame(gradient_frame, bg="#f7f9fc", bd=2, relief="ridge")
-main_frame.place(relx=0.5, rely=0.5, anchor="center", width=720, height=500)
+main_frame.place(relx=0.5, rely=0.6, anchor="center", relwidth=0.7, relheight=0.7)
 
-# Tabs
 notebook = ttk.Notebook(main_frame)
 notebook.pack(fill="both", expand=True, padx=10, pady=10)
 
@@ -37,7 +63,6 @@ notebook.add(frame1, text="Candidate Entry")
 notebook.add(frame2, text="Recruiter Entry")
 notebook.add(frame3, text="Check Matches")
 
-# ------------------ Candidate Entry ------------------
 ttk.Label(frame1, text="Candidate Name").grid(row=0, column=0, pady=10, padx=10)
 entry_name = ttk.Entry(frame1, width=40)
 entry_name.grid(row=0, column=1, pady=10)
@@ -69,6 +94,14 @@ def save_candidate():
         messagebox.showerror("❌ Invalid Input", "Experience must be a number.")
         return
 
+    csv_path = os.path.join('data', 'candidates.csv')
+    
+    if os.path.exists(csv_path):
+        existing_df = pd.read_csv(csv_path)
+        if not existing_df.empty and name.lower() in existing_df['name'].str.lower().values:
+            messagebox.showerror("❌ Duplicate Entry", f"Candidate '{name}' already exists!")
+            return
+
     data = {
         'name': [name],
         'skills': [skills.lower()],
@@ -76,7 +109,6 @@ def save_candidate():
         'qualification': [qual.lower()]
     }
     os.makedirs('data', exist_ok=True)
-    csv_path = os.path.join('data', 'candidates.csv')
     df = pd.DataFrame(data)
     if os.path.exists(csv_path):
         df.to_csv(csv_path, mode='a', header=False, index=False)
@@ -86,7 +118,6 @@ def save_candidate():
 
 ttk.Button(frame1, text="Save Candidate", command=save_candidate).grid(row=4, column=0, columnspan=2, pady=15)
 
-# ------------------ Recruiter Entry ------------------
 ttk.Label(frame2, text="Job Name").grid(row=0, column=0, pady=10, padx=10)
 entry_job_name = ttk.Entry(frame2, width=40)
 entry_job_name.grid(row=0, column=1, pady=10)
@@ -118,6 +149,14 @@ def save_job():
         messagebox.showerror("❌ Invalid Input", "Experience must be a number.")
         return
 
+    csv_path = os.path.join('data', 'jobs.csv')
+    
+    if os.path.exists(csv_path):
+        existing_df = pd.read_csv(csv_path)
+        if not existing_df.empty and job.lower() in existing_df['job_name'].str.lower().values:
+            messagebox.showerror("❌ Duplicate Entry", f"Job '{job}' already exists!")
+            return
+
     data = {
         'job_name': [job],
         'required_skills': [skills.lower()],
@@ -125,7 +164,6 @@ def save_job():
         'required_qualification': [qual.lower()]
     }
     os.makedirs('data', exist_ok=True)
-    csv_path = os.path.join('data', 'jobs.csv')
     df = pd.DataFrame(data)
     if os.path.exists(csv_path):
         df.to_csv(csv_path, mode='a', header=False, index=False)
@@ -135,7 +173,6 @@ def save_job():
 
 ttk.Button(frame2, text="Save Job", command=save_job).grid(row=4, column=0, columnspan=2, pady=15)
 
-# ------------------ Check Matches ------------------
 style = ttk.Style()
 style.configure("Treeview", rowheight=25)
 style.configure("Treeview.Heading", font=("Segoe UI", 10, "bold"))
@@ -154,7 +191,7 @@ def check_matches():
     matches = comparr(candidate_name)
 
     for i in tree.get_children():
-        tree.delete(i)  # Clear old results
+        tree.delete(i)  
 
     if not matches:
         messagebox.showinfo("No Matches", f"No suitable jobs found for {candidate_name}.")
@@ -165,35 +202,28 @@ def check_matches():
 
 ttk.Button(frame3, text="Find Job Matches", command=check_matches).grid(row=1, column=0, columnspan=2, pady=15)
 
-# Scrollable Table
-# ---------------- Scrollable Table (final working version) ----------------
 tree_container = ttk.Frame(frame3)
 tree_container.grid(row=2, column=0, columnspan=2, pady=10, sticky="nsew")
 
-# Configure frame to expand with window
+
 frame3.grid_rowconfigure(2, weight=1)
 frame3.grid_columnconfigure(0, weight=1)
 
 columns = ("Job Name", "Match Percentage")
 
-# Create Treeview
 tree = ttk.Treeview(tree_container, columns=columns, show="headings", height=10)
 tree.heading("Job Name", text="Job Name")
 tree.heading("Match Percentage", text="Match Percentage")
 tree.column("Job Name", anchor="center", width=350)
 tree.column("Match Percentage", anchor="center", width=150)
 
-# Add Scrollbar
 scrollbar = ttk.Scrollbar(tree_container, orient="vertical", command=tree.yview)
 tree.configure(yscrollcommand=scrollbar.set)
 
-# Pack both tree and scrollbar properly
 tree.pack(side="left", fill="both", expand=True)
 scrollbar.pack(side="right", fill="y")
-# ------------------ Footer ------------------
 footer = tk.Label(root, text="Developed by Ojas, Vishnu, Arkav, Shivang and Sushil",
                   font=("Segoe UI", 10, "italic"), bg="#c8d9ff")
 footer.pack(side="bottom", fill="x", pady=3)
 
-# ------------------ Run App ------------------
 root.mainloop()
